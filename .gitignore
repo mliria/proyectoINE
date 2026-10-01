@@ -1,0 +1,79 @@
+# ============================================
+# .gitignore para proyecto Flask (INE - Tasas de Paro)
+# ============================================
+
+# --- Entornos virtuales ---
+# Carpeta del entorno virtual de Python (no debe subirse al repositorio)
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+
+# --- Archivos de Python ---
+# Bytecode compilado y cachés de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Distribución / empaquetado ---
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# --- Flask ---
+# Carpetas de instancia y archivos de configuración local
+instance/
+.flaskenv
+.env
+
+# --- Variables de entorno y secretos ---
+# Nunca subir credenciales ni claves de API
+.env.*
+*.env
+secrets.json
+
+# --- Bases de datos locales ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Editores / IDEs ---
+# Visual Studio Code
+.vscode/
+# PyCharm / IntelliJ
+.idea/
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+# Vim
+*.swp
+*.swo
+*~
+
+# --- Sistema operativo ---
+# macOS
+.DS_Store
+# Windows
+Thumbs.db
+Desktop.ini
+# Linux
+*~
+
+# --- Testing / cobertura ---
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/

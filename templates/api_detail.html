@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ api.name }} - INE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a4d8f 0%, #2d6bc4 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            color: #1a4d8f;
+            font-size: 1.8em;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-btn {
+            display: inline-block;
+            background: #1a4d8f;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: #2d6bc4;
+        }
+        
+        .nav-btn.reset {
+            background: #dc3545;
+        }
+        
+        .nav-btn.reset:hover {
+            background: #c82333;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        .parameters-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .parameters-panel h2 {
+            color: #1a4d8f;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1a4d8f;
+        }
+        
+        .execute-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+        
+        .execute-btn:hover {
+            background: #218838;
+        }
+        
+        .results-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .results-panel h2 {
+            color: #1a4d8f;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .results-table th, .results-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .results-table th {
+            background: #1a4d8f;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .results-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ api.name }}</h1>
+            <div class="nav-buttons">
+                <a href="/" class="nav-btn">← Volver al Inicio</a>
+                <a href="/reset/{{ api.id }}" class="nav-btn reset">🔄 Resetear</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="parameters-panel">
+                <h2>Parámetros de la API</h2>
+                <form id="apiForm">
+                    {% for param in api.parameters %}
+                    <div class="form-group">
+                        <label for="{{ param.name }}">{{ param.label }}{% if param.required %} *{% endif %}:</label>
+                        {% if param.type == 'select' %}
+                        <select id="{{ param.name }}" name="{{ param.name }}">
+                            <option value="">Seleccione una opción</option>
+                            {% for option in param.options %}
+                            <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <input type="text" id="{{ param.name }}" name="{{ param.name }}" placeholder="Ingrese {{ param.label }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="execute-btn">🚀 Ejecutar API</button>
+                </form>
+            </div>
+            
+            <div class="results-panel">
+                <h2>Resultados</h2>
+                <div id="resultsContainer">
+                    <div class="loading">Seleccione los parámetros y haga clic en "Ejecutar API" para ver los resultados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('apiForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const params = {};
+            formData.forEach((value, key) => {
+                if (value) params[key] = value;
+            });
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '<div class="loading">Ejecutando API...</div>';
+            
+            try {
+                const response = await fetch('/api/{{ api.id }}/execute', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(params)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.data && Object.keys(data.data).length > 0) {
+                        renderResults(data.data);
+                    } else {
+                        resultsContainer.innerHTML = '<div class="no-results">No hay datos disponibles para los parámetros seleccionados</div>';
+                    }
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="error">
+                            <strong>Error:</strong> ${data.error}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsContainer.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        });
+        
+        function renderResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    resultsContainer.innerHTML = '<div class="no-results">No hay datos disponibles</div>';
+                    return;
+                }
+                
+                let html = '<table class="results-table">';
+                html += '<thead><tr>';
+                
+                if (data.length > 0 && typeof data[0] === 'object') {
+                    const headers = Object.keys(data[0]);
+                    headers.forEach(header => {
+                        html += `<th>${header}</th>`;
+                    });
+                }
+                
+                html += '</tr></thead><tbody>';
+                
+                data.forEach(row => {
+                    html += '<tr>';
+                    if (typeof row === 'object') {
+                        Object.values(row).forEach(value => {
+                            html += `<td>${value}</td>`;
+                        });
+                    } else {
+                        html += `<td>${row}</td>`;
+                    }
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                resultsContainer.innerHTML = html;
+            } else if (typeof data === 'object') {
+                let html = '<table class="results-table">';
+                html += '<thead><tr><th>Clave</th><th>Valor</th></tr></thead><tbody>';
+                
+                for (const [key, value] of Object.entries(data)) {
+                    html += `<tr><td><strong>${key}</strong></td><td>${JSON.stringify(value)}</td></tr>`;
+                }
+                
+                html += '</tbody></table>';
+                resultsContainer.innerHTML = html;
+            } else {
+                resultsContainer.innerHTML = `<div class="no-results">${data}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
