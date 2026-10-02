@@ -1,0 +1,10 @@
+# Declarative Render configuration for the INE Flask application.
+# Render injects the PORT environment variable at runtime; the Dockerfile CMD
+# binds Gunicorn to it automatically.
+services:
+  - type: web
+    name: proyectoine
+    env: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /

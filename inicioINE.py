@@ -4,6 +4,7 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import json
+import os
 
 # Inicialización de la aplicación Flask
 app = Flask(__name__)
@@ -102,6 +103,10 @@ def reset_api(api_id):
     return jsonify({"success": True, "message": "Parámetros reseteados"})
 
 # Punto de entrada principal de la aplicación
-# Inicia el servidor de desarrollo de Flask cuando el script se ejecuta directamente
+# Inicia el servidor de desarrollo de Flask cuando el script se ejecuta directamente.
+# En producción se usa Gunicorn (inicioINE:app); este bloque solo aplica al
+# desarrollo local y respeta la variable de entorno PORT.
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug, host='0.0.0.0', port=port)

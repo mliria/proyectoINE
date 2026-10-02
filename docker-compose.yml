@@ -1,0 +1,14 @@
+# Local parity with the production container.
+# Usage: docker compose up --build
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - PORT=8000
+    # env_file is optional; the application uses no environment variables.
+    # Uncomment the lines below if you later add a .env file:
+    # env_file:
+    #   - .env
+    restart: unless-stopped
