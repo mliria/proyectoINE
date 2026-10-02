@@ -54,3 +54,76 @@ La aplicación muestra tres APIs del INE para consultar tasas de paro:
 
 Cada API tiene su propia página de detalles donde se pueden introducir
 parámetros y ejecutar la consulta.
+
+
+DOCKER / CLOUD DEPLOYMENT
+=========================
+
+La aplicación se puede empaquetar en un contenedor Docker y desplegar en
+cualquier PaaS portable (Render, Railway, Fly.io). El contenedor usa Gunicorn
+como servidor WSGI de producción y escucha en el puerto indicado por la
+variable de entorno PORT (que la plataforma inyecta automáticamente).
+
+Comando de arranque (Gunicorn):
+
+   gunicorn --bind 0.0.0.0:${PORT} --workers 2 --threads 4 --timeout 60 inicioINE:app
+
+Ruta de importación de la aplicación: inicioINE:app
+
+
+CONSTRUIR LA IMAGEN LOCALMENTE
+------------------------------
+
+   docker build -t proyectoine .
+
+
+EJECUTAR EL CONTENEDOR LOCALMENTE
+---------------------------------
+
+   docker run -p 8000:8000 -e PORT=8000 proyectoine
+
+Después abre http://localhost:8000 en el navegador.
+
+Alternativa con Docker Compose (paridad local):
+
+   docker compose up --build
+
+
+DESPLEGAR EN RENDER
+-------------------
+
+1. Sube el repositorio a GitHub/GitLab.
+2. En Render, crea un nuevo "Web Service" y conecta el repositorio.
+3. Render detecta render.yaml (env: docker) y construye con el Dockerfile.
+4. Render inyecta la variable PORT; no es necesario configurarla.
+5. El health check apunta a la ruta "/".
+
+
+DESPLEGAR EN RAILWAY
+--------------------
+
+1. Sube el repositorio a GitHub.
+2. En Railway, crea un nuevo proyecto y elige "Deploy from GitHub repo".
+3. Railway detecta el Dockerfile y construye la imagen automáticamente.
+4. Railway inyecta la variable PORT; el Procfile/Dockerfile la respetan.
+5. Genera un dominio público en la pestaña Settings > Networking.
+
+
+DESPLEGAR EN FLY.IO
+-------------------
+
+1. Instala flyctl y ejecuta: fly launch
+2. Acepta el Dockerfile detectado (no generes uno nuevo).
+3. Asegúrate de que la app escucha en 0.0.0.0 y en el puerto de $PORT.
+4. Ejecuta: fly deploy
+5. Fly.io inyecta PORT; el contenedor se enlaza a él automáticamente.
+
+
+NOTAS
+-----
+
+- No se requieren secretos ni variables de entorno obligatorias.
+- El puerto 8000 es solo un valor por defecto; la plataforma puede
+  sobrescribirlo mediante PORT.
+- Para desarrollo local: python inicioINE.py (usa PORT o 5000 por defecto).
+  Activa el modo debug con FLASK_DEBUG=1.

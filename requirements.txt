@@ -1,2 +1,4 @@
 flask>=2.0.0
 requests>=2.25.0
+# gunicorn: production WSGI server used by the Dockerfile and Procfile
+gunicorn==21.2.0

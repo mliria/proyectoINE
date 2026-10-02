@@ -1,0 +1,47 @@
+# ---------------------------------------------------------------------------
+# Files excluded from the Docker build context.
+# ---------------------------------------------------------------------------
+
+# Virtual environments (never ship the local venv)
+venv/
+env/
+ENV/
+.venv/
+virtualenv/
+
+# Version control
+.git/
+.gitignore
+
+# Python caches / bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+*$py.class
+
+# Editors / IDEs
+.vscode/
+.idea/
+
+# Flask instance folder and local config
+instance/
+.flaskenv
+.env
+.env.*
+
+# Documentation / metadata
+readme.txt
+*.md
+LICENSE
+
+# OS cruft
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Docker / compose helpers (not needed inside the image)
+Dockerfile
+.dockerignore
+docker-compose.yml
