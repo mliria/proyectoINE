@@ -67,6 +67,7 @@ variable de entorno PORT (que la plataforma inyecta automáticamente).
 Comando de arranque (Gunicorn):
 
    gunicorn --bind 0.0.0.0:${PORT} --workers 2 --threads 4 --timeout 60 inicioINE:app
+   gunicorn inicioINE:app
 
 Ruta de importación de la aplicación: inicioINE:app
 
